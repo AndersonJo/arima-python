@@ -9,7 +9,7 @@ def show_result(train: np.array, test: np.array, train_pred: np.array, test_pred
     x_test = np.arange(len(train_pred), len(train_pred) + len(test_pred))
 
     pylab.ylim(np.min(train), np.max(test) + np.std(test) * 1.3)
-    pylab.plot(x_train, train[lag:], linestyle="--", label='train_true', color="#555555")
+    pylab.plot(x_train, train[lag:], linestyle="-", label='train_true', color="#555555")
     pylab.plot(x_train, train_pred, label='train_pred', color='blue')
     pylab.plot(x_test, test, label='test_true', color='#555555')
     pylab.plot(x_test, test_pred, label='pred_test', color='red')
@@ -17,9 +17,7 @@ def show_result(train: np.array, test: np.array, train_pred: np.array, test_pred
     pylab.grid()
 
     print('Lag Value:', lag)
-    print('Train R^2:', r2_score(train_pred, train[lag:]))
-    print('Train MSE:', mean_squared_error(train_pred, train[:-lag]))
-    print('Test  R^2:', r2_score(test_pred, test))
-    print('Test  MSE:', mean_squared_error(test_pred, test))
-
-from statsmodels.tsa.ar_model import AR
+    print('Train R^2:', r2_score(train[lag:], train_pred))
+    print('Train MSE:', mean_squared_error(train[:-lag], train_pred))
+    print('Test  R^2:', r2_score(test, test_pred))
+    print('Test  MSE:', mean_squared_error(test, test_pred))

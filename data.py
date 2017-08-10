@@ -5,8 +5,6 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 import pylab
 
-TEST_SIZE = 50
-
 
 def to_timeseries(data, lag):
     data = data.reshape(-1)
@@ -19,7 +17,7 @@ def to_timeseries(data, lag):
     return ts
 
 
-def get_data(filename: str, lag: int):
+def get_data(filename: str, lag: int, normalize=False):
     dataframe = pd.read_csv(filename,
                             names=['passenger'], index_col=0,
                             skiprows=1)
@@ -27,17 +25,17 @@ def get_data(filename: str, lag: int):
     dataframe = dataframe.astype('float64')
 
     data = dataframe.as_matrix()
-    # scaler = MinMaxScaler()
-    # data = scaler.fit_transform(dataframe.values.reshape((-1, 1)))
+    _size = int(len(data) * 0.7)  # 144
 
-    # Mean Adjusted Time Series
-    # data_adjusted = data - np.mean(data)
+    if normalize:
+        scaler = MinMaxScaler()
+        data = scaler.fit_transform(data)
 
-    train, test = data[:-TEST_SIZE], data[-TEST_SIZE:]
+    train, test = data[:_size], data[_size:]
     train, test = train.reshape(-1), test.reshape(-1)
 
     ts_data = to_timeseries(data, lag=lag)
-    ts_train, ts_test = ts_data[:-TEST_SIZE], ts_data[-TEST_SIZE:]
+    ts_train, ts_test = ts_data[:_size], ts_data[_size:]
 
     return dataframe, train, test, ts_train, ts_test
 
@@ -58,4 +56,4 @@ if __name__ == '__main__':
     filename = 'dataset/international-airline-passengers.csv'
     dataframe, train, test, ts_train, ts_test = get_data(filename, lag=4)
 
-    print(train.shape, ts_train.shape)
+    print(train.shape, ts_train.shape, test.shape)
